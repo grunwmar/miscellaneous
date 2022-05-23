@@ -9,7 +9,7 @@ import json
 @dataclass
 class GuardInfo:
     error:Exception = None
-    return_value:Any = None
+    return_value:int = None
     init_time:Any = None
 
 
@@ -19,12 +19,12 @@ class Guard:
         self._json_filename = json_filename
         self._json_data = None
 
-        self._return_value = None
+        self._return_value = 0
         self._error_value = None
+        self._exit_after_run = False
 
 
 
-    
     def run(self, main_function):
 
         __name__ = inspect.getmodule(main_function).__name__
@@ -45,6 +45,9 @@ class Guard:
                 if self._json_filename is not None:
                     with open(self._json_filename, "w") as json_file:
                         json.dump(self._json_data, json_file)
+
+                if self._exit_after_run:
+                    sys.exit(self._return_value)
 
         return wrapper()
         
@@ -79,6 +82,13 @@ class Guard:
                 json.dump(json_data, json_file)
 
         
+    @property
+    def EXIT_AFTER_RUN(self):
+        return self._exit_after_run
+
+    @EXIT_AFTER_RUN.setter
+    def EXIT_AFTER_RUN(self, value:bool):
+        self._exit_after_run = value
 
 
 Guard = Guard()
